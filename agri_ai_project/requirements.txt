@@ -1,0 +1,10 @@
+
+flask
+tensorflow
+numpy
+pillow
+matplotlib
+opencv-python
+lime
+scikit-image
+scikit-learn
