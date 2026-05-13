@@ -1,0 +1,11 @@
+flask
+tensorflow==2.13.0
+numpy
+pillow
+matplotlib
+opencv-python
+lime
+scikit-image
+scikit-learn
+werkzeug
+gunicorn
