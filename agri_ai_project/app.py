@@ -8,6 +8,7 @@ from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing import image
 from translations import get_translation, get_remedies, get_all_translations
 from explainability import get_comprehensive_explanation
+from image_enhancement import process_image_with_quality_check
 
 app = Flask(__name__)
 
@@ -357,6 +358,31 @@ li{
     margin-top:10px;
 }
 
+.quality-warnings{
+    background:#fff3cd;
+    border:2px solid #ffc107;
+    border-radius:10px;
+    padding:15px;
+    margin-bottom:20px;
+    border-left:4px solid #ff9800;
+}
+
+.warning-message{
+    color:#856404;
+    font-weight:500;
+    margin:8px 0;
+    padding:8px;
+    background:#fffbea;
+    border-radius:5px;
+    border-left:3px solid #ff9800;
+    padding-left:12px;
+}
+
+.warning-message:before{
+    content:"ℹ️ ";
+    margin-right:8px;
+}
+
 </style>
 
 </head>
@@ -412,6 +438,14 @@ li{
     {% if prediction %}
 
     <div class="result">
+
+        {% if quality_warnings %}
+        <div class="quality-warnings">
+            {% for warning in quality_warnings %}
+            <div class="warning-message">{{ warning }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
 
         <h2>{{ disease_label }}: {{ prediction }}</h2>
 
@@ -671,6 +705,7 @@ def home():
     channel_importance = {}
     spatial_importance = {}
     confidence_analysis = {}
+    quality_warnings = []
 
     if request.method == 'POST':
 
@@ -683,6 +718,13 @@ def home():
         file.save(filepath)
 
         uploaded_image = filepath
+
+        # =========================
+        # IMAGE QUALITY ENHANCEMENT
+        # =========================
+        
+        filepath, quality_report = process_image_with_quality_check(filepath)
+        quality_warnings = quality_report.get('warnings', [])
 
         # =========================
         # IMAGE PREPROCESSING
@@ -817,7 +859,8 @@ def home():
         lime_image=lime_image,
         channel_importance=channel_importance,
         spatial_importance=spatial_importance,
-        confidence_analysis=confidence_analysis
+        confidence_analysis=confidence_analysis,
+        quality_warnings=quality_warnings
     )
 
 # =========================
@@ -826,4 +869,5 @@ def home():
 
 if __name__ == '__main__':
 
-    app.run(debug=True)
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port, debug=False)

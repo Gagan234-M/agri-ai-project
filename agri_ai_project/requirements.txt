@@ -1,6 +1,6 @@
 
 flask
-tensorflow
+tensorflow==2.12.0
 numpy
 pillow
 matplotlib
@@ -8,3 +8,5 @@ opencv-python
 lime
 scikit-image
 scikit-learn
+werkzeug
+gunicorn
