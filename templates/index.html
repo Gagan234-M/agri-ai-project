@@ -1,0 +1,32 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Crop Disease Detection</title>
+    <style>
+        body{
+            font-family: Arial;
+            background:#f4f4f4;
+            text-align:center;
+            padding:40px;
+        }
+        .box{
+            background:white;
+            padding:30px;
+            border-radius:10px;
+            width:400px;
+            margin:auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h1>Crop Disease Detection</h1>
+
+        <form action="/predict" method="POST" enctype="multipart/form-data">
+            <input type="file" name="image" required><br><br>
+            <button type="submit">Predict Disease</button>
+        </form>
+    </div>
+</body>
+</html>
