@@ -4,21 +4,25 @@ import hashlib
 import numpy as np
 from werkzeug.utils import secure_filename
 
-from tensorflow.keras.models import load_model
-from tensorflow.keras.preprocessing import image
+# TensorFlow models will be imported lazily
+# Preprocessing will be imported lazily
 from translations import get_translation, get_remedies, get_all_translations
 from explainability import get_comprehensive_explanation
 from image_enhancement import process_image_with_quality_check
 
 app = Flask(__name__)
 
-# =========================
-# LOAD TRAINED MODEL
-# =========================
+# Model will be loaded lazily to prevent 502 timeouts
+model = None
 
-print("--- Initializing AI Model... ---")
-model = load_model("plant_disease_model.h5", compile=False)
-print("--- AI Model Loaded Successfully! ---")
+def get_model():
+    global model
+    if model is None:
+        print("--- Lazy Loading AI Model... ---")
+        from tensorflow.keras.models import load_model
+        model = load_model("plant_disease_model.h5", compile=False)
+        print("--- AI Model Loaded Successfully! ---")
+    return model
 
 class_names = [
     "Healthy_cardamon",
@@ -731,7 +735,7 @@ def home():
         # =========================
         # IMAGE PREPROCESSING
         # =========================
-
+        from tensorflow.keras.preprocessing import image
         img = image.load_img(filepath, target_size=(224, 224))
 
         img_array = image.img_to_array(img)
@@ -741,9 +745,10 @@ def home():
         img_array = img_array / 255.0
 
         # =========================
-        # PREDICTION
+        # PREDICTION (Lazy Loading)
         # =========================
 
+        model = get_model()
         prediction_result = model.predict(img_array)
 
         predicted_class = np.argmax(prediction_result)
