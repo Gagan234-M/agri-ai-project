@@ -1,7 +1,7 @@
 services:
   - type: web
     name: agri-ai-project
-    runtime: python-3.11
+    runtime: python
     plan: free
     buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn app:app
+    startCommand: gunicorn --chdir agri_ai_project app:app
