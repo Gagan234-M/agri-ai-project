@@ -17,7 +17,7 @@ app = Flask(__name__)
 # =========================
 
 print("--- Initializing AI Model... ---")
-model = load_model("plant_disease_model.h5")
+model = load_model("plant_disease_model.h5", compile=False)
 print("--- AI Model Loaded Successfully! ---")
 
 class_names = [
